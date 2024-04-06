@@ -1,7 +1,51 @@
-#!/usr/bin/bash
-FILE=$1
-while read NUMBERS;
-do
-	factors=($(factor $NUMBERS))
-	echo "$NUMBERS=$(($NUMBERS/${factors[1]}))*${factors[1]}"
-done < $FILE
+#!/usr/bin/python3
+
+import sys
+import math
+
+def factorize(n):
+    """ Factorize the number n into two smaller numbers p and q.
+        Return a tuple (p, q) where p * q = n and p <= q.
+    """
+    if n <= 1:
+        return None
+    
+    for p in range(2, int(math.sqrt(n)) + 1):
+        if n % p == 0:
+            q = n // p
+            return (p, q)
+    
+    return None
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: factors <file>")
+        sys.exit(1)
+    
+    input_file = sys.argv[1]
+    
+    try:
+        with open(input_file, 'r') as file:
+            for line in file:
+                # Strip newline character and convert line to integer
+                number = int(line.strip())
+                
+                # Factorize the number
+                result = factorize(number)
+                
+                if result:
+                    p, q = result
+                    print(f"{number}={p}*{q}")
+    
+    except FileNotFoundError:
+        print(f"Error: File '{input_file}' not found.")
+        sys.exit(1)
+    except ValueError:
+        print(f"Error: Invalid input in file '{input_file}'.")
+        sys.exit(1)
+    except Exception as e:
+        print(f"An unexpected error occurred: {e}")
+        sys.exit(1)
+
+if __name__ == "__main__":
+    main()

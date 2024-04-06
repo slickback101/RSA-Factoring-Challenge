@@ -1,18 +1,57 @@
 #!/usr/bin/python3
-from sys import argv
 
-with open(argv[1]) as f:
-    for line in f:
-        num = int(line)	
-        print("{:d}=".format(num), end='')
-        if num % 2 == 0:
-            print("{}*2".format(num//2))
-            continue
-        for i in range(3, num, 2):
-            if num % i == 0:
-                factor = num//i
-                for j in range(3, factor, 2):
-                    if factor % j == 0 or j == 0:
-                        break
-                print("{}*{}".format(factor, i))
-                break
+import sys
+import math
+
+def is_prime(num):
+    """ Check if a number is prime using trial division up to square root of num. """
+    if num <= 1:
+        return False
+    if num <= 3:
+        return True
+    if num % 2 == 0 or num % 3 == 0:
+        return False
+    i = 5
+    while i * i <= num:
+        if num % i == 0 or num % (i + 2) == 0:
+            return False
+        i += 6
+    return True
+
+def find_prime_factors(n):
+    """ Find the prime factors of n using trial division. """
+    if n <= 1:
+        return None, None
+    
+    for p in range(2, int(math.sqrt(n)) + 1):
+        if n % p == 0:
+            q = n // p
+            if is_prime(p) and is_prime(q):
+                return p, q
+    
+    return None, None
+
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python prime_factors.py <number>")
+        sys.exit(1)
+    
+    try:
+        n = int(sys.argv[1])
+    except ValueError:
+        print("Error: Invalid input. Please provide a valid integer.")
+        sys.exit(1)
+    
+    if n <= 1:
+        print("Error: Input number must be greater than 1.")
+        sys.exit(1)
+    
+    p, q = find_prime_factors(n)
+    
+    if p is None or q is None:
+        print(f"Error: Unable to factorize {n} into two prime numbers.")
+    else:
+        print(f"{n} = {p} * {q}")
+
+if __name__ == "__main__":
+    main()
